@@ -4,7 +4,7 @@
  * Plugin Name: MotionKit With Gsap
  * Plugin URI: https://motionkit.io
  * Description: MotionKit with gsap — Animation Engine, GSAP Enqueue, ScrollSmoother, Page Transition, and Preloader Engine for MotionKit.
- * Version: 1.7.2
+ * Version: 1.7.3
  * Author: Wealcoder
  * Author URI: https://motionkit.io
  * License: Proprietary — see LICENSE.txt
@@ -45,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'MOTIONKIT_CONNECTOR_VERSION', '1.7.2' );
+define( 'MOTIONKIT_CONNECTOR_VERSION', '1.7.3' );
 define( 'MOTIONKIT_CONNECTOR_PLUGIN_FILE', __FILE__ );
 define( 'MOTIONKIT_CONNECTOR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MOTIONKIT_CONNECTOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
