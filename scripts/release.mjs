@@ -253,6 +253,11 @@ if (!written.some((entry) => entry.entryName === `${SLUG}/${SLUG}.php`)) fail('T
 const sizeKb = (fs.statSync(zipPath).size / 1024).toFixed(0);
 console.log(`  ${path.relative(ROOT, zipPath)}  (${written.length} files, ${sizeKb} KB, version ${version})`);
 
+// The same zip under a fixed name rides along on the release, so GitHub's releases/latest/download/motionkit-with-gsap.zip always serves the newest version and the public download link never needs a hand update after a release.
+const latestPath = path.join(OUT_DIR, `${SLUG}.zip`);
+fs.copyFileSync(zipPath, latestPath);
+console.log(`  ${path.relative(ROOT, latestPath)}  (same zip, fixed name for the download link)`);
+
 const eddNext = `Next: upload it to Download 17 on my.motionkit.io, select it as the Update File, set Version Number to ${version} and fill in the changelog.`;
 
 if (ZIP_ONLY) {
@@ -293,10 +298,10 @@ console.log(`  pushed ${branch} and ${tag}`);
 
 step('Creating the GitHub release');
 // No readme changelog here, so the notes are GitHub's list of what changed since the previous tag.
-const gh = spawnSync('gh', ['release', 'create', tag, zipPath, '--title', `${NAME} ${version}`, '--generate-notes', '--verify-tag'], { cwd: ROOT, encoding: 'utf8' });
+const gh = spawnSync('gh', ['release', 'create', tag, zipPath, latestPath, '--title', `${NAME} ${version}`, '--generate-notes', '--verify-tag'], { cwd: ROOT, encoding: 'utf8' });
 if (gh.status !== 0) {
   console.error(`\n✖ The tag is pushed but the GitHub release was not created:\n${gh.stderr || gh.error}`);
-  console.error(`  Retry: gh release create ${tag} "${zipPath}" --title "${NAME} ${version}" --generate-notes --verify-tag\n`);
+  console.error(`  Retry: gh release create ${tag} "${zipPath}" "${latestPath}" --title "${NAME} ${version}" --generate-notes --verify-tag\n`);
   process.exit(1);
 }
 console.log(`  ${gh.stdout.trim()}`);
