@@ -284,9 +284,10 @@ final class Plugin
 
     /**
      * Register the animation-data tools handlers (Tools tab data layer:
-     * list/delete AJAX + delete_one POST). The tab's UI lives in the
-     * MotionKit dashboard plugin; admin-ajax requests run with is_admin()
-     * true, so the guard covers them too.
+     * list/delete AJAX + delete_one POST) and the mark beside animated posts
+     * in the post lists. The tab's UI lives in the MotionKit dashboard
+     * plugin; admin-ajax requests run with is_admin() true, so the guard
+     * covers them too.
      *
      * @return void
      */
@@ -294,6 +295,7 @@ final class Plugin
     {
         if (is_admin()) {
             (new \MotionKitConnector\Admin\AnimationDataTools())->init();
+            (new \MotionKitConnector\Admin\PostListBadge())->init();
         }
     }
 

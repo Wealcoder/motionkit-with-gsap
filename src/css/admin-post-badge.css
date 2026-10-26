@@ -1,0 +1,103 @@
+/**
+ * MotionKit with GSAP — the logo mark beside animated posts in the admin post lists.
+ * Loaded on edit.php screens only; the markup comes from Admin\PostListBadge.
+ */
+
+/* Sits in the post-states run after the title ("— Front Page, Elementor, [mark] 3"), on the text baseline. */
+.motionkit-post-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+  margin-left: 2px;
+  color: #1c7e92;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+a.motionkit-post-badge:hover,
+a.motionkit-post-badge:focus {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a.motionkit-post-badge:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* The mark is the logo SVG; the wrapper clips the sheen that sweeps across it. */
+.motionkit-post-badge-mark {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(28, 126, 146, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.motionkit-post-badge-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A thin highlight crossing the mark every few seconds: enough to read as alive, quiet enough for a list of fifty rows. */
+.motionkit-post-badge-mark::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-20deg);
+  animation: motionkit-post-badge-sheen 4.5s ease-in-out infinite;
+}
+
+@keyframes motionkit-post-badge-sheen {
+  0%,
+  72% {
+    left: -80%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+a.motionkit-post-badge:hover .motionkit-post-badge-mark {
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(89, 155, 253, 0.5);
+}
+
+/* The Screen Options entry, laid out like the panel's own Columns fieldset. */
+.motionkit-post-badge-option {
+  margin: 0 0 8px;
+}
+
+.motionkit-post-badge-option legend {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.motionkit-post-badge-option label {
+  display: inline-block;
+  margin: 0 0 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motionkit-post-badge-mark::after {
+    display: none;
+  }
+
+  .motionkit-post-badge-mark {
+    transition: none;
+  }
+}

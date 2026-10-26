@@ -2,14 +2,14 @@
 # This file is distributed under the Proprietary — see LICENSE.txt.
 msgid ""
 msgstr ""
-"Project-Id-Version: MotionKit With Gsap 1.7.2\n"
+"Project-Id-Version: MotionKit With Gsap 1.7.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/motionkit-with-gsap\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-25T06:36:41+00:00\n"
+"POT-Creation-Date: 2026-10-26T09:34:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: motionkit-with-gsap\n"
@@ -34,6 +34,22 @@ msgstr ""
 #: motionkit-with-gsap.php
 msgid "Wealcoder"
 msgstr ""
+
+#: includes/Admin/PostListBadge.php:92
+msgid "MotionKit"
+msgstr ""
+
+#: includes/Admin/PostListBadge.php:94
+msgid "Show the MotionKit mark on pages that have animations"
+msgstr ""
+
+#. translators: 1: number of animations on the page, 2: how many of them are live
+#: includes/Admin/PostListBadge.php:242
+#, php-format
+msgid "MotionKit: %1$d animation, %2$d live"
+msgid_plural "MotionKit: %1$d animations, %2$d live"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Auth/LicenseStatus.php:151
 msgid "This site is not connected to MotionKit."
