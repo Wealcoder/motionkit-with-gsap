@@ -21,6 +21,13 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.0.0 =
+* New: Animated posts carry the MotionKit logo in the post lists; switch it off from Screen Options.
+* New: Page transitions run only when the site's MotionKit plan includes them.
+* Security: The editor cannot save to a disconnected site, and editor session secrets are cleared when the site reconnects.
+* Improve: The editor's page search matches post titles only, for more accurate results.
+* Update: The animation engine is rebuilt from the latest MotionKit editor.
+
 = 1.7.2 =
 * Tweak: The license key field appears only on sites that have used MotionKit for a month without a key.
 * Improve: The editor's page list shows how many animations each page has.
