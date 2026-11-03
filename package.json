@@ -1,6 +1,6 @@
 {
   "name": "motionkit-connector",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "MotionKit Connector — Animation Engine, REST API, GSAP Enqueue, ScrollSmoother, Page Transition, and Preloader Engine",
   "main": "echo \"Nothing much here.\" && exit 1",
   "scripts": {

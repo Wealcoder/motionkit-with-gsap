@@ -337,6 +337,33 @@ final class AnimationDataTools
   }
 
   /**
+   * A URL that resolves to the kind of request an option-stored slot holds.
+   *
+   * Preview and the editor both open it, and the editor saves under whatever
+   * PageType::current() sees there, so the home URL sent the 404 slot's
+   * Preview to the front page and its edits to the front page's bucket. The
+   * 404 and search URLs are the ones search_pages() lists for the editor.
+   */
+  private function option_slot_url(string $slot): string
+  {
+    switch ($slot) {
+      case '404':
+        return home_url('/404-preview/');
+      case 'search':
+        return home_url('/?s=blog');
+      case 'archive':
+        // Every archive shares the slot; the first author's archive exists on every site and never 404s.
+        $authors = get_users(['has_published_posts' => true, 'orderby' => 'ID', 'number' => 1, 'fields' => 'ID']);
+        if ($authors === []) {
+          $authors = get_users(['orderby' => 'ID', 'number' => 1, 'fields' => 'ID']);
+        }
+        return get_author_posts_url($authors === [] ? 1 : (int) $authors[0]);
+    }
+
+    return home_url('/');
+  }
+
+  /**
    * Add edit_url (this build's editor, with token) + permalink to each record.
    */
   private function decorate_record(array $rec, string $token = ''): array
@@ -349,7 +376,7 @@ final class AnimationDataTools
       $link = get_term_link($rec['id']);
       $permalink = is_wp_error($link) ? null : $link;
     } elseif ($rec['store_type'] === 'option') {
-      $permalink = home_url('/');
+      $permalink = $this->option_slot_url($this->humanize_option_key($rec['option']));
     }
 
     $rec['permalink'] = $permalink;

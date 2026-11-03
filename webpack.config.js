@@ -20,6 +20,8 @@ module.exports = {
       "modules/editor-bridge": "./src/modules/editor-bridge.js",
       // The host wrapper. Compiled here, not vendored, because knowing what `motionkitData` means is this plugin's job; it calls the engine through `window.MotionKitEngine`.
       "lib/engine-wrapper": "./src/lib/engine-wrapper.js",
+      // The MotionKit mark beside animated posts in the admin post lists, and its Screen Options switch (Admin\PostListBadge).
+      "admin/post-badge": ["./src/modules/admin/post-badge.js", "./src/css/admin-post-badge.css"],
     };
   },
   output: {
