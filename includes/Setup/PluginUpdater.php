@@ -18,12 +18,12 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Serves Connector updates from the MotionKit store (EDD Software Licensing).
+ * Serves Connector updates to every site, with or without a license.
  *
- * The store only hands out a package for a license that is valid for the item on
- * this site's URL. The key comes from the editor server (LicenseStatus) or from
- * the Plugins-row field (LicenseKeyField); a site with neither never registers
- * the updater at all.
+ * The MotionKit store (EDD Software Licensing) says which version is current,
+ * and hands out a package for a license valid on this site's URL. Every other
+ * site gets the public GitHub release zip, the one motionkit.io's download
+ * button serves.
  *
  * @package MotionKitConnector
  * @since 1.0.0
@@ -32,12 +32,13 @@ final class PluginUpdater
 {
     public const STORE_URL = 'https://my.motionkit.io/';
     public const ITEM_ID = 17;
+    private const PUBLIC_PACKAGE_URL = 'https://github.com/Wealcoder/motionkit-with-gsap/releases/latest/download/motionkit-with-gsap.zip';
     private const CACHE_OPTION = 'motionkit_connector_update_info';
     private const FAILED_OPTION = 'motionkit_connector_update_failed';
     private const CACHE_TTL = 3 * HOUR_IN_SECONDS;
     private const RETRY_AFTER = HOUR_IN_SECONDS;
     private const CHECK_ACTION = 'motionkit_connector_check_update';
-    private const CHECK_RESULTS = ['available', 'current', 'no_license', 'error'];
+    private const CHECK_RESULTS = ['available', 'current', 'error'];
 
     private string $basename;
     private string $slug;
@@ -57,17 +58,11 @@ final class PluginUpdater
             return;
         }
 
-        // The manual check is registered even without a key, because fetching the key is the first thing it does.
         add_filter('plugin_row_meta', [$this, 'row_meta'], 10, 2);
         add_action('admin_post_' . self::CHECK_ACTION, [$this, 'handle_manual_check']);
         add_action('admin_notices', [$this, 'render_check_notice']);
 
         $this->license = LicenseStatus::get_license_key();
-
-        if ('' === $this->license) {
-            return;
-        }
-
         $this->register_update_hooks();
     }
 
@@ -117,26 +112,22 @@ final class PluginUpdater
         }
 
         $this->license = LicenseStatus::get_license_key();
-        $result = 'no_license';
+        delete_option(self::CACHE_OPTION);
+        delete_option(self::FAILED_OPTION);
+        $this->register_update_hooks();
 
-        if ('' !== $this->license) {
-            delete_option(self::CACHE_OPTION);
-            delete_option(self::FAILED_OPTION);
-            $this->register_update_hooks();
+        // Deleting the transient lifts wp_update_plugins()'s own throttle, and its rewrite of the transient is what runs check_update().
+        delete_site_transient('update_plugins');
+        wp_update_plugins();
 
-            // Deleting the transient lifts wp_update_plugins()'s own throttle, and its rewrite of the transient is what runs check_update().
-            delete_site_transient('update_plugins');
-            wp_update_plugins();
+        $transient = get_site_transient('update_plugins');
 
-            $transient = get_site_transient('update_plugins');
-
-            if (isset($transient->response[$this->basename])) {
-                $result = 'available';
-            } elseif (isset($transient->no_update[$this->basename])) {
-                $result = 'current';
-            } else {
-                $result = 'error';
-            }
+        if (isset($transient->response[$this->basename])) {
+            $result = 'available';
+        } elseif (isset($transient->no_update[$this->basename])) {
+            $result = 'current';
+        } else {
+            $result = 'error';
         }
 
         wp_safe_redirect(add_query_arg('motionkit_update_check', $result, self_admin_url('plugins.php')));
@@ -152,15 +143,9 @@ final class PluginUpdater
             return;
         }
 
-        // The key field is only mentioned when the row below actually shows it; otherwise connecting is the one thing to do.
-        $no_license = LicenseKeyField::is_offered()
-            ? __('MotionKit Connector updates are not enabled on this site yet. Connect it to your licensed MotionKit account, or enter your license key under MotionKit Connector below, then check again.', 'motionkit-with-gsap')
-            : __('MotionKit Connector updates are not enabled on this site yet. Connect it to your licensed MotionKit account, then check again.', 'motionkit-with-gsap');
-
         $messages = [
             'available'  => ['success', __('A new version of MotionKit Connector is available. Use "update now" in its row below.', 'motionkit-with-gsap')],
             'current'    => ['success', __('MotionKit Connector is up to date.', 'motionkit-with-gsap')],
-            'no_license' => ['warning', $no_license],
             'error'      => ['error', __('Could not reach the MotionKit update server. Please try again in a few minutes.', 'motionkit-with-gsap')],
         ];
 
@@ -444,13 +429,14 @@ final class PluginUpdater
         }
 
         $sections = array_map('wp_kses_post', array_map('strval', self::unpack($body['sections'] ?? [])));
+        $package = esc_url_raw((string) ($body['package'] ?? ''));
 
         return [
             'name'         => sanitize_text_field((string) ($body['name'] ?? 'MotionKit Connector')),
             'new_version'  => sanitize_text_field((string) $body['new_version']),
             'homepage'     => esc_url_raw((string) ($body['homepage'] ?? 'https://motionkit.io')),
-            // Empty when the license is not valid for this site; WordPress then shows the update without an "Update now" link.
-            'package'      => esc_url_raw((string) ($body['package'] ?? '')),
+            // The store leaves it empty for a site with no license valid here, which still gets the update, from the public release.
+            'package'      => '' !== $package ? $package : self::PUBLIC_PACKAGE_URL,
             'last_updated' => sanitize_text_field((string) ($body['last_updated'] ?? '')),
             'tested'       => sanitize_text_field((string) ($body['tested'] ?? '')),
             'requires'     => sanitize_text_field((string) ($body['requires'] ?? '')),
