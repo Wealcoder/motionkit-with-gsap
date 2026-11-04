@@ -2,14 +2,14 @@
 # This file is distributed under the Proprietary — see LICENSE.txt.
 msgid ""
 msgstr ""
-"Project-Id-Version: MotionKit With Gsap 1.7.3\n"
+"Project-Id-Version: MotionKit With Gsap 2.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/motionkit-with-gsap\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-26T09:34:14+00:00\n"
+"POT-Creation-Date: 2026-11-04T04:25:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: motionkit-with-gsap\n"
@@ -44,85 +44,85 @@ msgid "Show the MotionKit mark on pages that have animations"
 msgstr ""
 
 #. translators: 1: number of animations on the page, 2: how many of them are live
-#: includes/Admin/PostListBadge.php:242
+#: includes/Admin/PostListBadge.php:243
 #, php-format
 msgid "MotionKit: %1$d animation, %2$d live"
 msgid_plural "MotionKit: %1$d animations, %2$d live"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Auth/LicenseStatus.php:151
+#: includes/Auth/LicenseStatus.php:164
 msgid "This site is not connected to MotionKit."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:155
+#: includes/Auth/LicenseStatus.php:168
 msgid "A license check is already in progress."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:161
+#: includes/Auth/LicenseStatus.php:174
 msgid "No access token stored locally."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:194
+#: includes/Auth/LicenseStatus.php:207
 msgid "This site has not launched the MotionKit editor yet, so there is no license to check."
 msgstr ""
 
 #. translators: %d: HTTP status code returned by the MotionKit server.
-#: includes/Auth/LicenseStatus.php:203
+#: includes/Auth/LicenseStatus.php:216
 #, php-format
 msgid "Unexpected response from the MotionKit server (HTTP %d)."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:290
+#: includes/Auth/LicenseStatus.php:303
 #: includes/Setup/LicenseKeyField.php:122
 #: includes/Setup/PluginUpdater.php:109
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:470
-#: includes/Auth/LicenseStatus.php:508
+#: includes/Auth/LicenseStatus.php:494
+#: includes/Auth/LicenseStatus.php:532
 msgid "MotionKit:"
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:471
+#: includes/Auth/LicenseStatus.php:495
 msgid "This site's connection needs refreshing. Your license is active, but the local connection token is out of date — reconnect this site to restore full verification."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:472
+#: includes/Auth/LicenseStatus.php:496
 msgid "Reconnect this site"
 msgstr ""
 
 #. translators: 1: sites in use, 2: site limit of the plan.
-#: includes/Auth/LicenseStatus.php:492
+#: includes/Auth/LicenseStatus.php:516
 #, php-format
 msgid "This site is outside your MotionKit plan's site limit (%1$d of %2$d used). Free a slot or upgrade to keep using premium features here."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:497
+#: includes/Auth/LicenseStatus.php:521
 msgid "Your MotionKit license has expired. Renew it to keep using premium features."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:499
+#: includes/Auth/LicenseStatus.php:523
 msgid "Your MotionKit license has been disabled. Please contact support."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:501
+#: includes/Auth/LicenseStatus.php:525
 msgid "Your MotionKit license is not activated on this site yet. Reconnect the site, or activate it from your MotionKit account, to unlock premium features here."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:503
+#: includes/Auth/LicenseStatus.php:527
 msgid "The connected MotionKit account has no active license. Premium features are unavailable on this site."
 msgstr ""
 
-#: includes/Auth/LicenseStatus.php:511
+#: includes/Auth/LicenseStatus.php:535
 msgid "View license"
 msgstr ""
 
-#: includes/RestApi/RestApi.php:161
+#: includes/RestApi/RestApi.php:162
 msgid "Invalid or expired token."
 msgstr ""
 
-#: includes/RestApi/RestApi.php:181
+#: includes/RestApi/RestApi.php:182
 msgid "Authentication required."
 msgstr ""
 

@@ -21,6 +21,10 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.0.1 =
+* Update: The animation engine is rebuilt from the latest MotionKit editor.
+* Tweak: The translation template is refreshed for this version.
+
 = 2.0.0 =
 * New: Animated posts carry the MotionKit logo in the post lists; switch it off from Screen Options.
 * New: Page transitions run only when the site's MotionKit plan includes them.
