@@ -21,6 +21,9 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.0.3 =
+* Improve: The update check reads the latest version from the public release first, and from the store if that does not answer.
+
 = 2.0.2 =
 * Improve: Updates and auto-updates work on every site, with or without a license key.
 * Remove: The license key field in the plugin row, which updates no longer need.

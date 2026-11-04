@@ -2,7 +2,7 @@
 # This file is distributed under the Proprietary — see LICENSE.txt.
 msgid ""
 msgstr ""
-"Project-Id-Version: MotionKit With Gsap 2.0.2\n"
+"Project-Id-Version: MotionKit With Gsap 2.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/motionkit-with-gsap\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
