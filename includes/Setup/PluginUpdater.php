@@ -20,8 +20,9 @@ if (!defined('ABSPATH')) {
 /**
  * Serves Connector updates to every site, with or without a license.
  *
- * The MotionKit store (EDD Software Licensing) says which version is current,
- * and hands out a package for a license valid on this site's URL. Every other
+ * The latest GitHub release says which version is current, with the MotionKit
+ * store (EDD Software Licensing) as the fallback when GitHub does not answer. The
+ * store hands out a package for a license valid on this site's URL. Every other
  * site gets the public GitHub release zip, the one motionkit.io's download
  * button serves.
  *
@@ -32,6 +33,7 @@ final class PluginUpdater
 {
     public const STORE_URL = 'https://my.motionkit.io/';
     public const ITEM_ID = 17;
+    private const LATEST_RELEASE_URL = 'https://github.com/Wealcoder/motionkit-with-gsap/releases/latest';
     private const PUBLIC_PACKAGE_URL = 'https://github.com/Wealcoder/motionkit-with-gsap/releases/latest/download/motionkit-with-gsap.zip';
     private const CACHE_OPTION = 'motionkit_connector_update_info';
     private const FAILED_OPTION = 'motionkit_connector_update_failed';
@@ -332,7 +334,7 @@ final class PluginUpdater
     }
 
     /**
-     * The store's answer, cached for CACHE_TTL and keyed to the license so a changed key is never served another key's package.
+     * The latest version's details, cached for CACHE_TTL and keyed to the license so a changed key is never served another key's package.
      *
      * @return object|null
      */
@@ -351,7 +353,7 @@ final class PluginUpdater
             return is_array($cached) ? (object) $cached : null;
         }
 
-        // A store outage would otherwise add a 15s request to every wp-admin page load until it recovers.
+        // An outage of both sources would otherwise add up to 20s of requests to every wp-admin page load until it recovers.
         if ((int) get_option(self::FAILED_OPTION, 0) > time()) {
             return null;
         }
@@ -399,9 +401,65 @@ final class PluginUpdater
      */
     private function fetch_remote(): ?array
     {
-        $store_url = defined('MOTIONKIT_STORE_URL') ? MOTIONKIT_STORE_URL : apply_filters('motionkit_store_url', self::STORE_URL);
+        $body = $this->fetch_store();
+        $store_version = sanitize_text_field((string) ($body['new_version'] ?? ''));
+        // GitHub decides because every update downloads its zip, so a store ahead of it would offer a version the download does not hold; a store URL someone set on purpose (a staging store) is what they asked to test, so it answers alone.
+        $release_version = $this->store_is_overridden() ? '' : self::latest_release_version();
+        $new_version = '' !== $release_version ? $release_version : $store_version;
+
+        if ('' === $new_version) {
+            return null;
+        }
+
+        // The store's zip, changelog and date describe the version the store knows, so they are used only when that is the version on offer; the package is also empty for a site with no license valid here, which gets the public release.
+        $store_is_current = $store_version === $new_version;
+        $package = $store_is_current ? esc_url_raw((string) ($body['package'] ?? '')) : '';
+        $sections = $store_is_current ? array_map('wp_kses_post', array_map('strval', self::unpack($body['sections'] ?? []))) : [];
+
+        return [
+            'name'         => sanitize_text_field((string) ($body['name'] ?? 'MotionKit Connector')),
+            'new_version'  => $new_version,
+            'homepage'     => esc_url_raw((string) ($body['homepage'] ?? 'https://motionkit.io')),
+            'package'      => '' !== $package ? $package : self::PUBLIC_PACKAGE_URL,
+            'last_updated' => $store_is_current ? sanitize_text_field((string) ($body['last_updated'] ?? '')) : '',
+            'tested'       => sanitize_text_field((string) ($body['tested'] ?? '')),
+            'requires'     => sanitize_text_field((string) ($body['requires'] ?? '')),
+            'requires_php' => sanitize_text_field((string) ($body['requires_php'] ?? '')),
+            'sections'     => $sections,
+            'banners'      => array_map('esc_url_raw', array_map('strval', self::unpack($body['banners'] ?? []))),
+            'icons'        => array_map('esc_url_raw', array_map('strval', self::unpack($body['icons'] ?? []))),
+        ];
+    }
+
+    // GitHub redirects this link to the latest release's tag page, which names the version without an API call or its hourly limit. Empty when GitHub does not answer.
+    private static function latest_release_version(): string
+    {
+        $response = wp_remote_head(self::LATEST_RELEASE_URL, ['timeout' => 5, 'redirection' => 0]);
+
+        if (is_wp_error($response)) {
+            return '';
+        }
+
+        $location = (string) wp_remote_retrieve_header($response, 'location');
+
+        return preg_match('#/releases/tag/v(\d+\.\d+\.\d+)$#', $location, $matches) ? $matches[1] : '';
+    }
+
+    private function store_url(): string
+    {
+        return defined('MOTIONKIT_STORE_URL') ? MOTIONKIT_STORE_URL : apply_filters('motionkit_store_url', self::STORE_URL);
+    }
+
+    private function store_is_overridden(): bool
+    {
+        return self::STORE_URL !== $this->store_url();
+    }
+
+    // The store's answer, which needs no license for the version; empty when it does not answer.
+    private function fetch_store(): array
+    {
         $response = wp_remote_post(
-            $store_url,
+            $this->store_url(),
             [
                 'timeout' => 15,
                 'body'    => [
@@ -419,32 +477,12 @@ final class PluginUpdater
         );
 
         if (is_wp_error($response) || 200 !== (int) wp_remote_retrieve_response_code($response)) {
-            return null;
+            return [];
         }
 
         $body = json_decode(wp_remote_retrieve_body($response), true);
 
-        if (!is_array($body) || empty($body['new_version'])) {
-            return null;
-        }
-
-        $sections = array_map('wp_kses_post', array_map('strval', self::unpack($body['sections'] ?? [])));
-        $package = esc_url_raw((string) ($body['package'] ?? ''));
-
-        return [
-            'name'         => sanitize_text_field((string) ($body['name'] ?? 'MotionKit Connector')),
-            'new_version'  => sanitize_text_field((string) $body['new_version']),
-            'homepage'     => esc_url_raw((string) ($body['homepage'] ?? 'https://motionkit.io')),
-            // The store leaves it empty for a site with no license valid here, which still gets the update, from the public release.
-            'package'      => '' !== $package ? $package : self::PUBLIC_PACKAGE_URL,
-            'last_updated' => sanitize_text_field((string) ($body['last_updated'] ?? '')),
-            'tested'       => sanitize_text_field((string) ($body['tested'] ?? '')),
-            'requires'     => sanitize_text_field((string) ($body['requires'] ?? '')),
-            'requires_php' => sanitize_text_field((string) ($body['requires_php'] ?? '')),
-            'sections'     => $sections,
-            'banners'      => array_map('esc_url_raw', array_map('strval', self::unpack($body['banners'] ?? []))),
-            'icons'        => array_map('esc_url_raw', array_map('strval', self::unpack($body['icons'] ?? []))),
-        ];
+        return is_array($body) ? $body : [];
     }
 
     // EDD sends sections and banners as PHP-serialized strings; objects are refused so a tampered response cannot instantiate a class here.
