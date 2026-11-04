@@ -1,0 +1,49 @@
+name: Sync store version
+
+# Moves Download 17 on my.motionkit.io to a release as soon as it is published, whoever published it. Sites before 2.0.3 take the offered version from the store, so a release reaches them only after this runs.
+on:
+  release:
+    types: [published]
+  # Retries by hand: Actions > Sync store version > Run workflow.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Released version, like 2.0.3
+        required: true
+
+# It reads nothing from the repo and writes nothing to it, and it checks out no code and runs no third-party action, so the secret is only ever in reach of the script below.
+permissions: {}
+
+jobs:
+  sync:
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Tell the store
+        env:
+          # Through env, never inlined into the script: a tag name is text someone typed.
+          VERSION: ${{ inputs.version || github.event.release.tag_name }}
+          SECRET: ${{ secrets.MOTIONKIT_RELEASE_SECRET }}
+        run: |
+          VERSION="${VERSION#v}"
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Not a release version: $VERSION"
+            exit 1
+          fi
+
+          # 409 and 502 are GitHub's latest redirect lagging or not answering, which passes; anything else will not change by waiting.
+          for attempt in 1 2 3 4 5 6; do
+            status=$(curl -sS -o response.json -w '%{http_code}' --max-time 30 -X POST \
+              https://my.motionkit.io/wp-json/motionkit-release/v1/connector-version \
+              -H 'Content-Type: application/json' \
+              -H "X-MotionKit-Release-Secret: $SECRET" \
+              -d "{\"version\":\"$VERSION\"}") || status=000
+            echo "attempt $attempt: HTTP $status $(cat response.json 2>/dev/null)"
+            case "$status" in
+              200) exit 0 ;;
+              409|502|000) sleep 10 ;;
+              *) exit 1 ;;
+            esac
+          done
+          exit 1
