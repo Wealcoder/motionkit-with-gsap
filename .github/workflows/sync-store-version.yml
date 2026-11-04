@@ -1,6 +1,6 @@
 name: Sync store version
 
-# Moves Download 17 on my.motionkit.io to a release as soon as it is published, whoever published it. Sites before 2.0.3 take the offered version from the store, so a release reaches them only after this runs.
+# Moves Download 17 on my.motionkit.io (version, changelog, Version Log and file) to a release as soon as it is published, whoever published it. Sites before 2.0.3 take the offered version from the store, so a release reaches them only after this runs.
 on:
   release:
     types: [published]
@@ -41,7 +41,8 @@ jobs:
               -d "{\"version\":\"$VERSION\"}") || status=000
             echo "attempt $attempt: HTTP $status $(cat response.json 2>/dev/null)"
             case "$status" in
-              200) exit 0 ;;
+              # A step that did not finish fails the run, so whoever published gets the email; running it again finishes the job and repeats nothing.
+              200) grep -q '"complete":true' response.json && exit 0 || exit 1 ;;
               409|502|000) sleep 30 ;;
               *) exit 1 ;;
             esac
