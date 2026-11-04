@@ -18,7 +18,7 @@ jobs:
   sync:
     if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Tell the store
         env:
@@ -32,8 +32,8 @@ jobs:
             exit 1
           fi
 
-          # 409 and 502 are GitHub's latest redirect lagging or not answering, which passes; anything else will not change by waiting.
-          for attempt in 1 2 3 4 5 6; do
+          # 409 and 502 are GitHub's latest redirect lagging or not answering, which passes: on 2026-11-04 it still named the previous release for over a minute after publishing. Anything else will not change by waiting.
+          for attempt in $(seq 1 20); do
             status=$(curl -sS -o response.json -w '%{http_code}' --max-time 30 -X POST \
               https://my.motionkit.io/wp-json/motionkit-release/v1/connector-version \
               -H 'Content-Type: application/json' \
@@ -42,7 +42,7 @@ jobs:
             echo "attempt $attempt: HTTP $status $(cat response.json 2>/dev/null)"
             case "$status" in
               200) exit 0 ;;
-              409|502|000) sleep 10 ;;
+              409|502|000) sleep 30 ;;
               *) exit 1 ;;
             esac
           done
