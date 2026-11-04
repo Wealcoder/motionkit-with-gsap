@@ -21,6 +21,10 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.0.2 =
+* Improve: Updates and auto-updates work on every site, with or without a license key.
+* Remove: The license key field in the plugin row, which updates no longer need.
+
 = 2.0.1 =
 * Update: The animation engine is rebuilt from the latest MotionKit editor.
 * Tweak: The translation template is refreshed for this version.
