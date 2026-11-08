@@ -27,6 +27,7 @@ use MotionKitConnector\Common\MotionkitBuilderPageType;
 use MotionKitConnector\Common\ShareContext;
 use MotionKitConnector\Common\ShareLinks;
 use MotionKitConnector\Auth\JwtTokenManager;
+use MotionKitConnector\Auth\OAuthHandler;
 use MotionKitConnector\Factory\ComponentFactory;
 use MotionKitConnector\Support\EditorSessionTrait;
 
@@ -202,8 +203,8 @@ final class Frontend
     // Stand-down signal for third-party smoothers
     add_filter('bricksfly_smooth_scroller_is_active', [$this, 'veto_third_party_smoother']);
 
-    // Frontend script enqueue & head output — only on actual page loads
-    if (!is_admin()) {
+    // Frontend script enqueue & head output — only on actual page loads, and only while the site is connected to a MotionKit account. Disconnecting pauses every animation, transition, preloader and smoother without touching the saved records; reconnecting brings them back. A stored-token check, never a remote one, so no page load waits on the editor.
+    if (!is_admin() && OAuthHandler::is_connected()) {
       add_action('wp_head', ['\\MotionKitConnector\\Frontend\\PageTransition', 'print_head_view_transition'], 0);
       add_action('wp_head', ['\\MotionKitConnector\\Frontend\\PageTransition', 'print_head_early_cover'], 0);
       add_action('wp_enqueue_scripts', [$this, 'enqueue_page_transition'], 2);

@@ -37,7 +37,8 @@ final class ScrollSmoother
    */
   public static function should_run(): bool
   {
-    $should_run = self::is_enabled_for_current_page();
+    // A disconnected site plays nothing (Frontend::init_hooks), so it must not claim the smoother either: a third-party smoother would stand down for one that never starts.
+    $should_run = \MotionKitConnector\Auth\OAuthHandler::is_connected() && self::is_enabled_for_current_page();
     return (bool) apply_filters('motionkit_extension/scroll_smoother/should_run', $should_run);
   }
 
