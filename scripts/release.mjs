@@ -258,12 +258,10 @@ const latestPath = path.join(OUT_DIR, `${SLUG}.zip`);
 fs.copyFileSync(zipPath, latestPath);
 console.log(`  ${path.relative(ROOT, latestPath)}  (same zip, fixed name for the download link)`);
 
-const eddNext = `Next: upload it to Download 17 on my.motionkit.io, select it as the Update File, set Version Number to ${version} and fill in the changelog.`;
-
 if (ZIP_ONLY) {
   // A zip-only run keeps its bump: the point of it is a zip of that version, and the files are left for the developer to commit or discard.
   bumpedFrom = null;
-  console.log(`\n✔ Zip ready. Nothing was committed, tagged or pushed.\n\n${eddNext}\n`);
+  console.log(`\n✔ Zip ready. Nothing was committed, tagged or pushed.\n`);
   process.exit(0);
 }
 
@@ -305,4 +303,4 @@ if (gh.status !== 0) {
   process.exit(1);
 }
 console.log(`  ${gh.stdout.trim()}`);
-console.log(`\n✔ ${NAME} ${version} released.\n\n${eddNext}\n`);
+console.log(`\n✔ ${NAME} ${version} released. The Sync store version workflow now moves my.motionkit.io to ${version}; it emails you if it fails.\n`);

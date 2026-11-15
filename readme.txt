@@ -21,6 +21,17 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.0.3 =
+* Improve: The update check reads the latest version from the public release first, and from the store if that does not answer.
+
+= 2.0.2 =
+* Improve: Updates and auto-updates work on every site, with or without a license key.
+* Remove: The license key field in the plugin row, which updates no longer need.
+
+= 2.0.1 =
+* Update: The animation engine is rebuilt from the latest MotionKit editor.
+* Tweak: The translation template is refreshed for this version.
+
 = 2.0.0 =
 * New: Animated posts carry the MotionKit logo in the post lists; switch it off from Screen Options.
 * New: Page transitions run only when the site's MotionKit plan includes them.
