@@ -21,6 +21,10 @@ Works together with the free MotionKit plugin from WordPress.org, which connects
 
 == Changelog ==
 
+= 2.1.0 =
+* Tweak: Animations, page transitions, the preloader and smooth scrolling play only while the site is connected to a MotionKit account. Disconnecting pauses them without deleting anything, and connecting again brings them back.
+* Update: The animation engine is rebuilt from the latest MotionKit editor.
+
 = 2.0.3 =
 * Improve: The update check reads the latest version from the public release first, and from the store if that does not answer.
 
